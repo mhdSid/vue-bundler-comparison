@@ -1,0 +1,27 @@
+{
+  "name": "vue-bundler-comparison",
+  "version": "1.0.0",
+  "private": true,
+  "description": "This is a monorepo to compare vite vs webpack performance",
+  "main": "index.js",
+  "scripts": {
+    "build:vite": "yarn workspace @vue-bundler-comparison/app-vite build",
+    "build:webpack": "yarn workspace @vue-bundler-comparison/app-webpack build",
+    "compare": "node ./scripts/compareBuilds.js",
+    "build:all": "yarn build:vite && yarn build:webpack && yarn compare",
+    "clean": "rm -rf packages/*/dist"
+  },
+  "license": "UNLICENSED",
+  "workspaces": [
+    "packages/*"
+  ],
+  "packageManager": "yarn@3.2.4",
+  "engines": {
+    "node": ">=18 <19",
+    "npm": ">=6.14.16"
+  },
+  "devDependencies": {
+    "filesize": "^10.1.6",
+    "glob": "^11.0.0"
+  }
+}

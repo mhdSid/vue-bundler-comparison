@@ -1,0 +1,10 @@
+{
+  "name": "@vue-bundler-comparison/shared",
+  "version": "1.0.0",
+  "main": "src/components/index.js",
+  "dependencies": {
+    "@tanstack/vue-table": "^8.11.0",
+    "date-fns": "^2.30.0",
+    "vue": "^3.4.0"
+  }
+}
