@@ -3,6 +3,7 @@
 This monorepo demonstrates and measures the performance differences between Vite and Webpack when building Vue applications. It's designed to help teams make data-driven decisions when choosing between these bundlers.
 
 ## Project Structure
+```bash
 ├── packages/
 │   ├── shared/ # Shared components and utilities
 │   │   ├── src/
@@ -16,6 +17,7 @@ This monorepo demonstrates and measures the performance differences between Vite
 │   └── app-webpack/ # Webpack-based Vue application
 └── scripts/
     └── compareBuilds.js # Build comparison script
+```
 
 ## What This Project Measures
 
@@ -39,10 +41,10 @@ This monorepo demonstrates and measures the performance differences between Vite
 ## Getting Started
 
 1. Install dependencies:
-   ```bash
-   yarn install
-   yarn build:all
-  ```
+```bash
+  yarn install
+  yarn build:all
+```
 
 ## Understanding the Results
 The comparison script (scripts/compare-builds.js) generates a report showing:
