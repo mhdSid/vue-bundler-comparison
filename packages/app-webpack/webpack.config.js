@@ -8,11 +8,6 @@ module.exports = {
     path: path.resolve(__dirname, 'dist'),
     filename: '[name].[contenthash].js',
   },
-  resolve: {
-    alias: {
-      '@monorepo/shared': path.resolve(__dirname, '../shared/src')
-    }
-  },
   module: {
     rules: [
       {
