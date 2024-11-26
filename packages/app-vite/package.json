@@ -3,7 +3,7 @@
   "private": true,
   "scripts": {
     "dev": "vite",
-    "build": "vite build --debug",
+    "build": "node --max-old-space-size=80 ../../node_modules/.bin/vite build --debug",
     "preview": "vite preview"
   },
   "dependencies": {

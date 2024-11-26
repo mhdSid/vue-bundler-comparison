@@ -29,10 +29,23 @@ module.exports = {
   optimization: {
     splitChunks: {
       cacheGroups: {
-        vendor: {
+        'vue-vendor': {
+          test: /[\\/]node_modules[\\/]vue[\\/]/,
+          name: 'vue-vendor',
+          chunks: 'all',
+          priority: 20
+        },
+        'table-vendor': {
+          test: /[\\/]node_modules[\\/](@tanstack[\\/]vue-table|date-fns)[\\/]/,
+          name: 'table-vendor',
+          chunks: 'all',
+          priority: 10
+        },
+        vendors: {
           test: /[\\/]node_modules[\\/]/,
           name: 'vendors',
-          chunks: 'all'
+          chunks: 'all',
+          priority: 5
         },
         shared: {
           test: /[\\/]packages[\\/]shared[\\/]/,

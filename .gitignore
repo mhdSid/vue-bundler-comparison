@@ -8,7 +8,6 @@ node_modules
 *_result.*
 coverage
 dist
-!packages/front-icons/dist
 yarn-error.log
 db.json
 .env
@@ -20,3 +19,8 @@ temp/
 /packages/**/jest-html-reporters-attach/
 jest/*
 jest-html-reporters-attach/*
+/**/dist
+/**/**/stats.json
+/**/stats.json
+memory-profile.json
+

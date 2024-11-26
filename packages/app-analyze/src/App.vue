@@ -1,6 +1,6 @@
 <template>
-  <div class="chart-container">
-    <Line v-if="chartData" :data="chartData" :options="chartOptions" />
+  <div v-if="chartData" class="chart-container">
+    <Line :data="chartData" :options="chartOptions" />
   </div>
 </template>
 
@@ -43,7 +43,7 @@ export default defineComponent({
       plugins: {
         tooltip: {
           callbacks: {
-            label: (context) => {
+            label (context) {
               const label = context.dataset.label || ''
               const value = context.parsed.y.toFixed(2)
               return `${label}: ${value} MB`

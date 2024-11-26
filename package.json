@@ -22,6 +22,7 @@
   },
   "devDependencies": {
     "filesize": "^10.1.6",
-    "glob": "^11.0.0"
+    "glob": "^11.0.0",
+    "kleur": "^4.1.5"
   }
 }

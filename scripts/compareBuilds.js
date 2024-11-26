@@ -1,136 +1,19 @@
-// // scripts/compare-builds.js
-// const fs = require('fs')
-// const path = require('path')
-// const { filesize } = require('filesize')
-// const glob = require('glob')
-// const { execSync } = require('child_process')
-
-// function getDirectorySize(directory) {
-//   const files = glob.sync(directory + '/**/*.*')
-//   return files.reduce((total, file) => {
-//     const stats = fs.statSync(file)
-//     return total + stats.size
-//   }, 0)
-// }
-
-// function analyzeWebpackStats() {
-//   const statsFile = path.join(__dirname, '../packages/app-webpack/stats.json')
-//   const stats = JSON.parse(fs.readFileSync(statsFile, 'utf8'))
-  
-//   const assetsByChunk = {}
-//   stats.assets.forEach(asset => {
-//     assetsByChunk[asset.name] = {
-//       size: asset.size,
-//       type: path.extname(asset.name).slice(1)
-//     }
-//   })
-
-//   return {
-//     time: stats.time,
-//     totalSize: stats.assets.reduce((total, asset) => total + asset.size, 0),
-//     chunks: assetsByChunk
-//   }
-// }
-
-// function analyzeViteStats() {
-//   const manifestFile = path.join(__dirname, '../packages/app-vite/dist/.vite/manifest.json')
-//   const manifest = JSON.parse(fs.readFileSync(manifestFile, 'utf8'))
-  
-//   const assetsByChunk = {}
-//   Object.entries(manifest).forEach(([key, value]) => {
-//     const fileName = value.file
-//     const filePath = path.join(__dirname, '../packages/app-vite/dist', fileName)
-//     const stats = fs.statSync(filePath)
-    
-//     assetsByChunk[fileName] = {
-//       size: stats.size,
-//       type: path.extname(fileName).slice(1)
-//     }
-//   })
-
-//   return {
-//     chunks: assetsByChunk
-//   }
-// }
-
-// function measureBuildTime(command, cwd) {
-//   const start = Date.now()
-//   try {
-//     execSync(command, { 
-//       cwd,
-//       stdio: 'inherit' // This will show the build output in real-time
-//     })
-//     return Date.now() - start
-//   } catch (error) {
-//     console.error(`Build failed: ${error.message}`)
-//     process.exit(1)
-//   }
-// }
-
-// async function main() {
-//   console.log('\nCleaning previous builds...')
-//   try {
-//     execSync('yarn clean', { stdio: 'inherit' })
-//   } catch (error) {
-//     console.warn('Clean failed, continuing...')
-//   }
-
-//   // Measure Vite build time
-//   console.log('\nBuilding Vite app...')
-//   const viteBuildTime = measureBuildTime('yarn build', path.join(__dirname, '../packages/app-vite'))
-//   const viteStats = analyzeViteStats()
-//   const viteDistSize = getDirectorySize(path.join(__dirname, '../packages/app-vite/dist'))
-
-//   // Measure Webpack build time
-//   console.log('\nBuilding Webpack app...')
-//   const webpackBuildTime = measureBuildTime('yarn build', path.join(__dirname, '../packages/app-webpack'))
-//   const webpackStats = analyzeWebpackStats()
-//   const webpackDistSize = getDirectorySize(path.join(__dirname, '../packages/app-webpack/dist'))
-
-//   // Print comparison
-//   console.log('\nBuild Comparison Results:')
-//   console.log('========================')
-  
-//   console.log('\nBuild Times:')
-//   console.log(`Vite: ${viteBuildTime}ms`)
-//   console.log(`Webpack: ${webpackBuildTime}ms`)
-//   console.log(`Difference: ${Math.abs(viteBuildTime - webpackBuildTime)}ms (${
-//     viteBuildTime < webpackBuildTime ? 'Vite faster' : 'Webpack faster'
-//   })`)
-  
-//   console.log('\nTotal Bundle Sizes:')
-//   console.log(`Vite: ${filesize(viteDistSize)}`)
-//   console.log(`Webpack: ${filesize(webpackDistSize)}`)
-  
-//   console.log('\nChunk Analysis:')
-//   console.log('\nVite Chunks:')
-//   Object.entries(viteStats.chunks).forEach(([name, info]) => {
-//     console.log(`  ${name}: ${filesize(info.size)}`)
-//   })
-  
-//   console.log('\nWebpack Chunks:')
-//   Object.entries(webpackStats.chunks).forEach(([name, info]) => {
-//     console.log(`  ${name}: ${filesize(info.size)}`)
-//   })
-// }
-
-// main().catch(console.error)
-
-const fs = require('fs');
-const path = require('path');
-const { filesize } = require('filesize');
-const glob = require('glob');
-const { execSync, spawn } = require('child_process');
+const fs = require('fs')
+const path = require('path')
+const { filesize } = require('filesize')
+const glob = require('glob')
+const { execSync, spawn } = require('child_process')
+const chalk = require('kleur')
 
 // Memory tracking utilities
 function getMemoryUsage() {
-  const usage = process.memoryUsage();
+  const usage = process.memoryUsage()
   return {
     heapUsed: usage.heapUsed,
     heapTotal: usage.heapTotal,
     rss: usage.rss,
     external: usage.external
-  };
+  }
 }
 
 function formatMemoryUsage(memory) {
@@ -139,45 +22,45 @@ function formatMemoryUsage(memory) {
     heapTotal: filesize(memory.heapTotal),
     rss: filesize(memory.rss),
     external: filesize(memory.external)
-  };
+  }
 }
 
 function trackMemoryUsage() {
-  const memoryUsage = [];
+  const memoryUsage = []
   const interval = setInterval(() => {
     memoryUsage.push({
       timestamp: Date.now(),
       ...getMemoryUsage()
-    });
-  }, 100); // Sample every 100ms
+    })
+  }, 100) // Sample every 100ms
 
   return {
     stop: () => {
-      clearInterval(interval);
-      return memoryUsage;
+      clearInterval(interval)
+      return memoryUsage
     }
-  };
+  }
 }
 
 async function runBuildWithMemoryTracking(command, cwd) {
   return new Promise((resolve, reject) => {
-    const [cmd, ...args] = command.split(' ');
-    const startTime = Date.now();
-    const memoryTracker = trackMemoryUsage();
+    const [cmd, ...args] = command.split(' ')
+    const startTime = Date.now()
+    const memoryTracker = trackMemoryUsage()
     
     const process = spawn(cmd, args, {
       cwd,
       shell: true,
       stdio: 'inherit'
-    });
+    })
 
     process.on('close', (code) => {
-      const buildTime = Date.now() - startTime;
-      const memoryStats = memoryTracker.stop();
+      const buildTime = Date.now() - startTime
+      const memoryStats = memoryTracker.stop()
       
       if (code !== 0) {
-        reject(new Error(`Build failed with code ${code}`));
-        return;
+        reject(new Error(`Build failed with code ${code}`))
+        return
       }
 
       // Calculate peak memory usage
@@ -191,116 +74,118 @@ async function runBuildWithMemoryTracking(command, cwd) {
         heapTotal: 0,
         rss: 0,
         external: 0
-      });
+      })
 
       resolve({
         buildTime,
         peakMemory,
         memoryTimeline: memoryStats
-      });
-    });
-  });
+      })
+    })
+  })
 }
 
 // Your existing helper functions remain the same
 function getDirectorySize(directory) {
-  const files = glob.sync(directory + '/**/*.*');
+  const files = glob.sync(directory + '/**/*.*')
   return files.reduce((total, file) => {
-    const stats = fs.statSync(file);
-    return total + stats.size;
-  }, 0);
+    const stats = fs.statSync(file)
+    return total + stats.size
+  }, 0)
 }
 
 function analyzeWebpackStats() {
-  const statsFile = path.join(__dirname, '../packages/app-webpack/stats.json');
-  const stats = JSON.parse(fs.readFileSync(statsFile, 'utf8'));
-  const assetsByChunk = {};
+  const statsFile = path.join(__dirname, '../packages/app-webpack/stats.json')
+  const stats = JSON.parse(fs.readFileSync(statsFile, 'utf8'))
+  const assetsByChunk = {}
   stats.assets.forEach(asset => {
-    assetsByChunk[asset.name] = {
-      size: asset.size,
-      type: path.extname(asset.name).slice(1)
-    };
-  });
+    if (asset.name !== 'index.html') {
+      assetsByChunk[asset.name] = {
+        size: asset.size,
+        type: path.extname(asset.name).slice(1)
+      }
+    }
+  })
   return {
     time: stats.time,
     totalSize: stats.assets.reduce((total, asset) => total + asset.size, 0),
     chunks: assetsByChunk
-  };
+  }
 }
 
 function analyzeViteStats() {
-  const manifestFile = path.join(__dirname, '../packages/app-vite/dist/.vite/manifest.json');
-  const manifest = JSON.parse(fs.readFileSync(manifestFile, 'utf8'));
-  const assetsByChunk = {};
+  const manifestFile = path.join(__dirname, '../packages/app-vite/dist/.vite/manifest.json')
+  const manifest = JSON.parse(fs.readFileSync(manifestFile, 'utf8'))
+  const assetsByChunk = {}
   Object.entries(manifest).forEach(([key, value]) => {
-    const fileName = value.file;
-    const filePath = path.join(__dirname, '../packages/app-vite/dist', fileName);
-    const stats = fs.statSync(filePath);
+    const fileName = value.file
+    const filePath = path.join(__dirname, '../packages/app-vite/dist', fileName)
+    const stats = fs.statSync(filePath)
     assetsByChunk[fileName] = {
       size: stats.size,
       type: path.extname(fileName).slice(1)
-    };
-  });
-  return { chunks: assetsByChunk };
+    }
+  })
+  return { chunks: assetsByChunk }
 }
 
 async function main() {
-  console.log('\nCleaning previous builds...');
+  console.log(chalk.cyan('\nCleaning previous builds...'))
   try {
-    execSync('yarn clean', { stdio: 'inherit' });
+    execSync('yarn clean', { stdio: 'inherit' })
   } catch (error) {
-    console.warn('Clean failed, continuing...');
+    console.warn(chalk.yellow('Clean failed, continuing...'))
   }
 
   // Build and track Vite
-  console.log('\nBuilding Vite app...');
+  console.log(chalk.cyan('\nBuilding Vite app...'))
   const viteResults = await runBuildWithMemoryTracking(
     'yarn build',
     path.join(__dirname, '../packages/app-vite')
-  );
-  const viteStats = analyzeViteStats();
-  const viteDistSize = getDirectorySize(path.join(__dirname, '../packages/app-vite/dist'));
+  )
+  const viteStats = analyzeViteStats()
+  const viteDistSize = getDirectorySize(path.join(__dirname, '../packages/app-vite/dist'))
 
   // Build and track Webpack
-  console.log('\nBuilding Webpack app...');
+  console.log(chalk.cyan('\nBuilding Webpack app...'))
   const webpackResults = await runBuildWithMemoryTracking(
     'yarn build',
     path.join(__dirname, '../packages/app-webpack')
-  );
-  const webpackStats = analyzeWebpackStats();
-  const webpackDistSize = getDirectorySize(path.join(__dirname, '../packages/app-webpack/dist'));
+  )
+  const webpackStats = analyzeWebpackStats()
+  const webpackDistSize = getDirectorySize(path.join(__dirname, '../packages/app-webpack/dist'))
 
   // Print comparison
-  console.log('\nBuild Comparison Results:');
-  console.log('========================');
+  console.log(chalk.green('\nBuild Comparison Results:'))
+  console.log(chalk.green('========================'))
   
-  console.log('\nBuild Times:');
-  console.log(`Vite: ${viteResults.buildTime}ms`);
-  console.log(`Webpack: ${webpackResults.buildTime}ms`);
-  console.log(`Difference: ${Math.abs(viteResults.buildTime - webpackResults.buildTime)}ms (${
-    viteResults.buildTime < webpackResults.buildTime ? 'Vite faster' : 'Webpack faster'
-  })`);
+  console.log(chalk.blue('\nBuild Times:'))
+  console.log(chalk.yellow(`Vite: ${viteResults.buildTime}ms`))
+  console.log(chalk.yellow(`Webpack: ${webpackResults.buildTime}ms`))
+  console.log(chalk.yellow(`Difference: ${Math.abs(viteResults.buildTime - webpackResults.buildTime)}ms (${
+    viteResults.buildTime < webpackResults.buildTime ? chalk.green('Vite faster') : chalk.red('Webpack faster')
+  })`))
 
-  console.log('\nPeak Memory Usage:');
-  console.log('\nVite:');
-  console.log(formatMemoryUsage(viteResults.peakMemory));
-  console.log('\nWebpack:');
-  console.log(formatMemoryUsage(webpackResults.peakMemory));
+  console.log(chalk.blue('\nPeak Memory Usage:'))
+  console.log(chalk.magenta('\nVite:'))
+  console.log(chalk.yellow(JSON.stringify(formatMemoryUsage(viteResults.peakMemory), null, 2)))
+  console.log(chalk.magenta('\nWebpack:'))
+  console.log(chalk.yellow(JSON.stringify(formatMemoryUsage(webpackResults.peakMemory), null, 2)))
 
-  console.log('\nTotal Bundle Sizes:');
-  console.log(`Vite: ${filesize(viteDistSize)}`);
-  console.log(`Webpack: ${filesize(webpackDistSize)}`);
+  console.log(chalk.blue('\nTotal Bundle Sizes:'))
+  console.log(chalk.yellow(`Vite: ${filesize(viteDistSize)}`))
+  console.log(chalk.yellow(`Webpack: ${filesize(webpackDistSize)}`))
 
-  console.log('\nChunk Analysis:');
-  console.log('\nVite Chunks:');
+  console.log(chalk.blue('\nChunk Analysis:'))
+  console.log(chalk.magenta('\nVite Chunks:'))
   Object.entries(viteStats.chunks).forEach(([name, info]) => {
-    console.log(` ${name}: ${filesize(info.size)}`);
-  });
+    console.log(chalk.yellow(` ${name}: ${filesize(info.size)}`))
+  })
 
-  console.log('\nWebpack Chunks:');
+  console.log(chalk.magenta('\nWebpack Chunks:'))
   Object.entries(webpackStats.chunks).forEach(([name, info]) => {
-    console.log(` ${name}: ${filesize(info.size)}`);
-  });
+    console.log(chalk.yellow(` ${name}: ${filesize(info.size)}`))
+  })
 
   // Optionally save memory timeline data for visualization
   fs.writeFileSync(
@@ -309,7 +194,7 @@ async function main() {
       vite: viteResults.memoryTimeline,
       webpack: webpackResults.memoryTimeline
     }, null, 2)
-  );
+  )
 }
 
-main().catch(console.error);
+main().catch(console.error)
