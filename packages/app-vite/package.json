@@ -7,7 +7,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@vue-bundler-comparison/shared": "1.0.0",
+    "@vue-bundler-comparison/shared": "workspace:*",
     "vue": "^3.4.0"
   },
   "devDependencies": {

@@ -25,4 +25,4 @@ jest-html-reporters-attach/*
 memory-profile.json
 build-report.html
 performance-data.json
-
+.yarn/install-state.gz

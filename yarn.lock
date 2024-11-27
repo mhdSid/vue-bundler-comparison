@@ -1731,7 +1731,7 @@ __metadata:
   resolution: "@vue-bundler-comparison/app-vite@workspace:packages/app-vite"
   dependencies:
     "@vitejs/plugin-vue": ^5.0.0
-    "@vue-bundler-comparison/shared": 1.0.0
+    "@vue-bundler-comparison/shared": "workspace:*"
     rollup-plugin-visualizer: ^5.12.0
     vite: ^5.0.0
     vue: ^3.4.0
@@ -1742,7 +1742,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@vue-bundler-comparison/app-webpack@workspace:packages/app-webpack"
   dependencies:
-    "@vue-bundler-comparison/shared": 1.0.0
+    "@vue-bundler-comparison/shared": "workspace:*"
     "@vue/compiler-sfc": ^3.4.0
     css-loader: ^6.8.1
     html-webpack-plugin: ^5.5.3
@@ -1756,7 +1756,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@vue-bundler-comparison/shared@1.0.0, @vue-bundler-comparison/shared@workspace:packages/shared":
+"@vue-bundler-comparison/shared@workspace:*, @vue-bundler-comparison/shared@workspace:packages/shared":
   version: 0.0.0-use.local
   resolution: "@vue-bundler-comparison/shared@workspace:packages/shared"
   dependencies:

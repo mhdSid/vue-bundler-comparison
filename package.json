@@ -8,7 +8,7 @@
     "build:vite": "yarn workspace @vue-bundler-comparison/app-vite build",
     "build:webpack": "yarn workspace @vue-bundler-comparison/app-webpack build",
     "compare": "node ./scripts/compareBuilds.js",
-    "build:all": "yarn build:vite && yarn build:webpack && yarn compare",
+    "build:all": "yarn clean && yarn build:vite && yarn build:webpack && yarn compare",
     "clean": "rm -rf packages/*/dist",
     "eslint": "./node_modules/.bin/jest --config eslint.jest.config.js"
   },
