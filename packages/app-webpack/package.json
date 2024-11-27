@@ -3,7 +3,7 @@
   "private": true,
   "scripts": {
     "dev": "webpack serve --mode development",
-    "build": "node --max-old-space-size=70 ../../node_modules/.bin/webpack --mode production --profile --json > stats.json"
+    "build": "webpack --mode production --profile --json > stats.json"
   },
   "dependencies": {
     "@vue-bundler-comparison/shared": "1.0.0",
@@ -16,6 +16,7 @@
     "style-loader": "^3.3.3",
     "vue-loader": "^17.3.1",
     "webpack": "^5.89.0",
+    "webpack-bundle-analyzer": "^4.10.2",
     "webpack-cli": "^5.1.4",
     "webpack-dev-server": "^4.15.1"
   }

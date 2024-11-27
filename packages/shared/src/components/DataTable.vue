@@ -3,11 +3,10 @@
     <table class="data-table">
       <thead>
         <tr>
-          <th 
-            v-for="column in columns" 
+          <th
+            v-for="column in columns"
             :key="column.id"
-            @click="() => handleSort(column.id)"
-          >
+            @click="() => handleSort(column.id)">
             {{ column.header }}
             <span v-if="sorting.field === column.id">
               {{ sorting.direction === 'asc' ? 'â†‘' : 'â†“' }}
@@ -47,7 +46,7 @@ export default {
       required: true
     }
   },
-  setup(props) {
+  setup (props) {
     const sorting = ref({ field: null, direction: 'asc' })
 
     const handleSort = (field) => {
@@ -60,13 +59,13 @@ export default {
 
     const sortedData = computed(() => {
       if (!sorting.value.field) return props.data
-      
+
       return [...props.data].sort((a, b) => {
         const aVal = a[sorting.value.field]
         const bVal = b[sorting.value.field]
-        
+
         const modifier = sorting.value.direction === 'asc' ? 1 : -1
-        
+
         if (aVal < bVal) return -1 * modifier
         if (aVal > bVal) return 1 * modifier
         return 0

@@ -1,7 +1,7 @@
 <template>
   <div>
-    <HelloWorld msg="Vite App" />
-    <DataTable :data="tableData" :columns="columns" />
+    <HelloWorld msg="Vite App"/>
+    <DataTable :data="tableData" :columns="columns"/>
   </div>
 </template>
 
@@ -14,7 +14,7 @@ export default {
     HelloWorld,
     DataTable
   },
-  data() {
+  data () {
     return {
       columns: [
         { id: 'name', header: 'Name' },
